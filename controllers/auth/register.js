@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const asyncHandler = require('../../middlewares/async');
 const ErrorResponse = require('../../utils/errorResponse');
 const { registerSchema } = require('../../utils/schemas');
+const ConversationModel = require('../../models/Conversation');
 
 async function registerController(req, res, next) {
 	const { username, email, password } = req.body;
@@ -22,6 +23,8 @@ async function registerController(req, res, next) {
 		email: email.toLowerCase(),
 		password,
 	});
+	// create a new workplace conversation
+	await ConversationModel.create({ participants: [user._id] });
 
 	return res.status(201).json({
 		success: true,
@@ -29,6 +32,8 @@ async function registerController(req, res, next) {
 		token: user.getSignedJwtToken(),
 		username: user.username,
 		email: user.email,
+		_id: user._id,
+		expiresIn: process.env.JWT_EXPIRE,
 	});
 }
 

@@ -34,6 +34,8 @@ async function loginController(req, res, next) {
 		token: user.getSignedJwtToken(),
 		username: user.username,
 		email: user.email,
+		_id: user._id,
+		expiresIn: process.env.JWT_EXPIRE,
 	});
 }
 

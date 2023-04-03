@@ -2,55 +2,28 @@ const express = require('express');
 const mongoose = require('mongoose');
 const colors = require('colors');
 const morgan = require('morgan');
-const { Server } = require('socket.io');
 const { createServer } = require('http');
 const errorHandler = require('./middlewares/error');
 
 // Load env vars
-require('dotenv').config({ path: './config/.env' });
+require('dotenv').config({ path: './config/server.env' });
 const cors = require('cors');
 
 // Route files
 const authRouter = require('./routes/auth');
 const verifyToken = require('./middlewares/auth');
-const authSocket = require('./middlewares/authSocket');
-const {
-	addConnectedUser,
-	removeConnectedUser,
-	connectedUsers,
-} = require('./utils/socket');
-const friendsRouter = require('./routes/friends');
 
-const PORT = process.env.PORT || process.env.API_PORT;
+const friendsRouter = require('./routes/friends');
+const { createSocketServer } = require('./socketServer');
+const conversationsRouter = require('./routes/conversations');
+
+const PORT = process.env.PORT || 5000;
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server, {
-	cors: { origin: '*', methods: ['GET', 'POST'] },
-});
 
-io.use((socket, next) => {
-	authSocket(socket, next);
-});
-
-io.on('connection', (socket) => {
-	// console.log(socket.user);
-	console.log(
-		`A client with id ${socket.id} has been connected successfully.`.cyan
-	);
-	// console.log({ socketId: socket.id });
-	// console.log({ userId: socket.user.userId });
-
-	// user connect handler
-	addConnectedUser(socket.id, socket.user.id);
-	// user disconnect handler
-	socket.on('disconnect', () => {
-		console.log(
-			`A client with id ${socket.id} has been disconnected successfully.`.cyan
-		);
-		removeConnectedUser(socket.id, socket.user.id);
-	});
-});
+// Register socket server
+createSocketServer(server);
 
 // Enable CORS
 app.use(cors());
@@ -64,6 +37,7 @@ app.use(morgan('combined'));
 // Mount routers
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/friends', verifyToken, friendsRouter);
+app.use('/api/v1/conversations', verifyToken, conversationsRouter);
 
 // Test route for auth middleware
 app.get('/api/v1/getMe', verifyToken, (req, res, next) => {
@@ -73,7 +47,7 @@ app.get('/api/v1/getMe', verifyToken, (req, res, next) => {
 app.use(errorHandler);
 
 mongoose
-	.connect(process.env.MONGO_URI)
+	.connect(process.env.MONGO_URI_LOCAL)
 	.then((connectionDetails) => {
 		const { host, name } = connectionDetails.connections[0];
 		console.log(
@@ -81,7 +55,6 @@ mongoose
 				`MongoDB connect successfully... \nHost:  ${host}\nDatabase Name:  ${name}`
 			)
 		);
-		return;
 	})
 	.catch((error) => {
 		console.log(colors.underline.red('Server is not starting...'));

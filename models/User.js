@@ -24,6 +24,7 @@ const UserSchema = new mongoose.Schema({
 		minLength: [6, 'Password must be atleast 6 characters long'],
 		select: false,
 	},
+	friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 });
 
 // Encrypt password using bcrypt
@@ -47,6 +48,6 @@ UserSchema.methods.matchPassword = async function (enteredPassword) {
 	return await bcryptjs.compare(enteredPassword, this.password);
 };
 
-const UserModel = mongoose.model('users', UserSchema);
+const UserModel = mongoose.model('User', UserSchema);
 
 module.exports = UserModel;
