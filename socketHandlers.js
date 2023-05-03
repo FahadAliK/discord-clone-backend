@@ -58,32 +58,7 @@ async function updateFriends(userId) {
 	}
 }
 
-async function directMessageHandler(data) {
-	// create a new message in DB
-	const newMessage = await MessageModel.create({
-		from: data.from,
-		to: data.to,
-		message: data.message,
-		type: data.type,
-	});
-
-	const conversation = await ConversationModel.findById(data.conversationId);
-	conversation.messages.push(newMessage._id);
-	await conversation.save();
-	const io = getSocketServerInstance();
-	[
-		...getActiveConnections(data.to),
-		...getActiveConnections(data.from),
-	].forEach(async (socketId) => {
-		io.to(socketId).emit(
-			'new-messages',
-			await conversation.populate('messages')
-		);
-	});
-}
-
 module.exports = {
 	updateFriendsPendingInvitations,
 	updateFriends,
-	directMessageHandler,
 };

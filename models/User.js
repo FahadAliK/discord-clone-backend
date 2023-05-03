@@ -25,6 +25,10 @@ const UserSchema = new mongoose.Schema({
 		select: false,
 	},
 	friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+	imageUrl: {
+		type: String,
+		default: '',
+	},
 });
 
 // Encrypt password using bcrypt

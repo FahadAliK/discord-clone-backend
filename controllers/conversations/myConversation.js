@@ -12,6 +12,7 @@ async function myConversationController(req, res, next) {
 	res.status(200).json({
 		success: true,
 		message: `Conversation of user having ID : ${req.user._id} fetched successfully.`,
+		messagesLength: conversation.messages.length,
 		conversation,
 	});
 }

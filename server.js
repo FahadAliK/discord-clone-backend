@@ -16,6 +16,7 @@ const verifyToken = require('./middlewares/auth');
 const friendsRouter = require('./routes/friends');
 const { createSocketServer } = require('./socketServer');
 const conversationsRouter = require('./routes/conversations');
+const messagesRouter = require('./routes/messages');
 
 const PORT = process.env.PORT || 5000;
 
@@ -38,6 +39,7 @@ app.use(morgan('combined'));
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/friends', verifyToken, friendsRouter);
 app.use('/api/v1/conversations', verifyToken, conversationsRouter);
+app.use('/api/v1/messages', verifyToken, messagesRouter);
 
 // Test route for auth middleware
 app.get('/api/v1/getMe', verifyToken, (req, res, next) => {

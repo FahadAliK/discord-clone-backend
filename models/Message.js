@@ -21,6 +21,7 @@ const MessageSchema = new Schema(
 		type: {
 			type: String,
 			enum: ['DIRECT', 'WORKSPACE'],
+			trim: true,
 		},
 	},
 	{ timestamps: true }

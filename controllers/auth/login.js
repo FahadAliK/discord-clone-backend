@@ -35,6 +35,7 @@ async function loginController(req, res, next) {
 		username: user.username,
 		email: user.email,
 		_id: user._id,
+		imageUrl: user.imageUrl,
 		expiresIn: process.env.JWT_EXPIRE,
 	});
 }

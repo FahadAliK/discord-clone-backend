@@ -42,4 +42,33 @@ const inviteSchema = Joi.object({
 	}),
 });
 
-module.exports = { loginSchema, registerSchema, inviteSchema };
+const newMessageSchema = Joi.object({
+	conversationId: Joi.string().required().messages({
+		'string.base': 'Conversation ID must be a string',
+		'string.empty': 'Please add a conversation ID',
+	}),
+	from: Joi.string().required().messages({
+		'string.base': 'From must be a string',
+		'string.empty': 'Please add a From Field',
+	}),
+	to: Joi.string().required().messages({
+		'string.base': 'To must be a string',
+		'string.empty': 'Please add a To Field',
+	}),
+	message: Joi.string().required().messages({
+		'string.base': 'Message must be a string',
+		'string.empty': 'Please add a Message',
+	}),
+	type: Joi.string().required().valid('DIRECT', 'WORKSPACE').messages({
+		'string.base': 'Type must be a string',
+		'string.empty': 'Please add a Type of DIRECT Or WORKSPACE',
+		'any.only': '"type" must be one of [DIRECT, WORKSPACE]',
+	}),
+});
+
+module.exports = {
+	loginSchema,
+	registerSchema,
+	inviteSchema,
+	newMessageSchema,
+};

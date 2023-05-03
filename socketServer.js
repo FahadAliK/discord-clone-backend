@@ -37,9 +37,6 @@ function createSocketServer(server) {
 			console.log({ data });
 			updateFriends(socket.user.id);
 		});
-		socket.on('direct-message', async (data) => {
-			await directMessageHandler(data);
-		});
 		// user connect handler
 		addNewConnectedUser(socket.id, socket.user.id);
 		updateFriendsPendingInvitations(socket.user.id);
